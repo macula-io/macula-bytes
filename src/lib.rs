@@ -73,8 +73,14 @@
 
 extern crate alloc;
 
-#[cfg(feature = "std")]
+// Macula no_std mode: when compiling for the macula-kernel target, alias
+// the macula_std shim as `std` so every `use std::*` resolves through it.
+// Other targets keep upstream semantics: `extern crate std` only when the
+// `std` feature is on. The two arms are mutually exclusive.
+#[cfg(all(feature = "std", not(target_os = "none")))]
 extern crate std;
+#[cfg(target_os = "none")]
+extern crate macula_std as std;
 
 pub mod buf;
 pub use crate::buf::{Buf, BufMut};
@@ -93,7 +99,7 @@ mod serde;
 #[inline(never)]
 #[cold]
 fn abort() -> ! {
-    #[cfg(feature = "std")]
+    #[cfg(any(feature = "std", target_os = "none"))]
     {
         std::process::abort();
     }
@@ -112,7 +118,7 @@ fn abort() -> ! {
 }
 
 #[inline(always)]
-#[cfg(feature = "std")]
+#[cfg(any(feature = "std", target_os = "none"))]
 fn saturating_sub_usize_u64(a: usize, b: u64) -> usize {
     match usize::try_from(b) {
         Ok(b) => a.saturating_sub(b),
@@ -121,7 +127,7 @@ fn saturating_sub_usize_u64(a: usize, b: u64) -> usize {
 }
 
 #[inline(always)]
-#[cfg(feature = "std")]
+#[cfg(any(feature = "std", target_os = "none"))]
 fn min_u64_usize(a: u64, b: usize) -> usize {
     match usize::try_from(a) {
         Ok(a) => usize::min(a, b),
@@ -154,10 +160,10 @@ impl core::fmt::Display for TryGetError {
     }
 }
 
-#[cfg(feature = "std")]
+#[cfg(any(feature = "std", target_os = "none"))]
 impl std::error::Error for TryGetError {}
 
-#[cfg(feature = "std")]
+#[cfg(any(feature = "std", target_os = "none"))]
 impl From<TryGetError> for std::io::Error {
     fn from(error: TryGetError) -> Self {
         std::io::Error::new(std::io::ErrorKind::Other, error)

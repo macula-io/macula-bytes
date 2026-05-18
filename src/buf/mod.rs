@@ -19,12 +19,12 @@ mod buf_mut;
 mod chain;
 mod iter;
 mod limit;
-#[cfg(feature = "std")]
+#[cfg(any(feature = "std", target_os = "none"))]
 mod reader;
 mod take;
 mod uninit_slice;
 mod vec_deque;
-#[cfg(feature = "std")]
+#[cfg(any(feature = "std", target_os = "none"))]
 mod writer;
 
 pub use self::buf_impl::Buf;
@@ -35,5 +35,5 @@ pub use self::limit::Limit;
 pub use self::take::Take;
 pub use self::uninit_slice::UninitSlice;
 
-#[cfg(feature = "std")]
+#[cfg(any(feature = "std", target_os = "none"))]
 pub use self::{reader::Reader, writer::Writer};

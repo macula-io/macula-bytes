@@ -1,11 +1,11 @@
-#[cfg(feature = "std")]
+#[cfg(any(feature = "std", target_os = "none"))]
 use crate::buf::{reader, Reader};
 use crate::buf::{take, Chain, Take};
-#[cfg(feature = "std")]
+#[cfg(any(feature = "std", target_os = "none"))]
 use crate::{min_u64_usize, saturating_sub_usize_u64};
 use crate::{panic_advance, panic_does_not_fit, TryGetError};
 
-#[cfg(feature = "std")]
+#[cfg(any(feature = "std", target_os = "none"))]
 use std::io::IoSlice;
 
 use alloc::boxed::Box;
@@ -202,8 +202,8 @@ pub trait Buf {
     /// with `dst` being a zero length slice.
     ///
     /// [`writev`]: http://man7.org/linux/man-pages/man2/readv.2.html
-    #[cfg(feature = "std")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
+    #[cfg(any(feature = "std", target_os = "none"))]
+    #[cfg_attr(docsrs, doc(cfg(any(feature = "std", target_os = "none"))))]
     fn chunks_vectored<'a>(&'a self, dst: &mut [IoSlice<'a>]) -> usize {
         if dst.is_empty() {
             return 0;
@@ -2443,8 +2443,8 @@ pub trait Buf {
     /// assert_eq!(11, num);
     /// assert_eq!(&dst[..11], &b"hello world"[..]);
     /// ```
-    #[cfg(feature = "std")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
+    #[cfg(any(feature = "std", target_os = "none"))]
+    #[cfg_attr(docsrs, doc(cfg(any(feature = "std", target_os = "none"))))]
     fn reader(self) -> Reader<Self>
     where
         Self: Sized,
@@ -2465,7 +2465,7 @@ macro_rules! deref_forward_buf {
             (**self).chunk()
         }
 
-        #[cfg(feature = "std")]
+        #[cfg(any(feature = "std", target_os = "none"))]
         #[inline]
         fn chunks_vectored<'b>(&'b self, dst: &mut [IoSlice<'b>]) -> usize {
             (**self).chunks_vectored(dst)
@@ -2923,7 +2923,7 @@ impl Buf for &[u8] {
     }
 }
 
-#[cfg(feature = "std")]
+#[cfg(any(feature = "std", target_os = "none"))]
 impl<T: AsRef<[u8]>> Buf for std::io::Cursor<T> {
     #[inline]
     fn remaining(&self) -> usize {

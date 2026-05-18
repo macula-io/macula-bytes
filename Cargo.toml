@@ -135,3 +135,10 @@ version = "0.7"
 level = "warn"
 priority = 0
 check-cfg = ["cfg(loom)"]
+
+# Macula no_std mode: pulled in only when compiling for target_os = "none".
+# Aliased as `std` in lib.rs so std::io::Cursor / IoSlice / process::abort
+# resolve through the shim.
+[target.'cfg(target_os = "none")'.dependencies.macula-std]
+git = "https://codeberg.org/macula-internal/macula-std.git"
+branch = "main"
