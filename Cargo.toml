@@ -140,5 +140,5 @@ check-cfg = ["cfg(loom)"]
 # Aliased as `std` in lib.rs so std::io::Cursor / IoSlice / process::abort
 # resolve through the shim.
 [target.'cfg(target_os = "none")'.dependencies.macula-std]
-git = "https://codeberg.org/macula-internal/macula-std.git"
+git = "https://github.com/macula-io/macula-std.git"
 branch = "main"
